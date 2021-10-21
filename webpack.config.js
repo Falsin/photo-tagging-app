@@ -8,7 +8,7 @@ module.exports = {
     path: path.resolve(__dirname, 'build'),
   },
   devServer: {
-    static: './dist',
+    static: './build',
   },
   module: {
     rules: [
