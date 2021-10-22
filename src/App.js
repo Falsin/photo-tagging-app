@@ -20,11 +20,24 @@ function App() {
   const [image, setImage] = useState(null);
 
   useEffect(() => {
+    //let link;
     getDownloadURL(ref(storage, 'images/level-1.jpg'))
       .then((url) => {
         setImage(url);
       })
+
+      /* .then((url) => {
+        const xhr = new XMLHttpRequest();
+        xhr.responseType = 'blob';
+        xhr.onload = (event) => {
+          setImage(URL.createObjectURL(xhr.response));
+        };
+        xhr.open('GET', url);
+        xhr.send();
+      }) */
   }, [])
+
+  console.log(image);
 
   return (
     <div className="App">
