@@ -1,2 +1,13 @@
+import React from "react";
 import { HashRouter, Switch, Route } from "react-router-dom";
-import RegistComp from "./RegistPage";
+import MainComp from "./MainPage";
+
+export default function Routes() {
+  return (
+    <HashRouter>
+      <Switch>
+        <Route exact path='/' component={MainComp}></Route>
+      </Switch>
+    </HashRouter>
+  )
+}

@@ -63,4 +63,6 @@ function ImageComp(props) {
   }
 } */
 
+//export { firebaseApp };
+
 export default App;
