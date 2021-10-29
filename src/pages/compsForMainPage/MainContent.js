@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import firebaseApp from "../../Firebase";
+import waldo from '../../images/waldo.jpg'
 
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { Link } from "react-router-dom";
@@ -23,10 +24,11 @@ const WrapperBeforeGame = styled.div`
 const WrapperForGame = styled.div`
   display: flex;
   justify-content: center;
+  position: relative;
 
   img {
     display: block;
-    position: relative;
+    /* position: relative; */
   }
 `
 
@@ -66,19 +68,49 @@ export default function MainContent(props) {
       <WrapperForGame >
         <img src={img} onClick={(e) => {
           console.log(e)
-          let div = document.createElement('div');
-          div.style.width = '10px'
-          div.style.height = '10px';
-          div.style.background = 'red';
-          div.style.position = 'absolute';
-          div.style.top = `${e.clientY}px`;
-          div.style.left = `${e.clientX}px`;
-          div.style.zIndex = '3';
-          e.target.parentNode.append(div);
-          console.log(e.target.getBoundingClientRect())
-          //e.target.append(div);
+          createDivElem(e)
         }}/>
       </WrapperForGame>
     )
   }
+}
+
+function createDivElem(e) {
+  let list = document.createElement('ul');
+  let option = document.createElement('li');
+  let image = document.createElement('img');
+  
+  option.append(image);
+  list.append(option);
+
+  setStyles(list, image, e);
+  console.log(e.target.getBoundingClientRect())
+
+  e.target.parentNode.append(list);
+}
+
+function setStyles(list, image, e) {
+  /* const setVerticalCoord = window.pageYOffset + e.clientY;
+  const setHorizontalCoord = window.pageXOffset + e.clientX; */
+
+  const sizeObj = e.target.getBoundingClientRect();
+
+  const setVerticalCoord = (e.clientY - sizeObj.top) * 100 / (sizeObj.height);
+  const setHorizontalCoord = (e.clientX - sizeObj.left) * 100 / (sizeObj.width);
+  console.log(e.clientX)
+  console.log(sizeObj.left + sizeObj.width)
+  console.log(e.clientX - sizeObj.left)
+
+  console.log('вертикальная:' + setVerticalCoord);
+  console.log('горизонтальная:' + setHorizontalCoord);
+  console.log(e.clientY)
+
+  image.style.width = '30px';
+  image.style.height = '30px';
+  image.src = `${waldo}`;
+
+  list.style.listStyle = 'none';
+  list.style.position = 'absolute';
+  list.style.top = `${setVerticalCoord}%`;
+  list.style.left = `${setHorizontalCoord}%`;
 }
