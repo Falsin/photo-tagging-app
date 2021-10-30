@@ -67,11 +67,21 @@ export default function MainContent(props) {
     return (
       <WrapperForGame >
         <img src={img} onClick={(e) => {
-          console.log(e)
-          createDivElem(e)
+/*           console.log(e);
+          console.log(e.target.getBoundingClientRect()) */
+          deleteDivElem(e);
+          createDivElem(e);
+          //checkCoord(e);
         }}/>
       </WrapperForGame>
     )
+  }
+}
+
+function deleteDivElem(e) {
+  const list = e.target.parentNode.querySelector('ul');
+  if (list) {
+    list.remove();
   }
 }
 
@@ -79,31 +89,20 @@ function createDivElem(e) {
   let list = document.createElement('ul');
   let option = document.createElement('li');
   let image = document.createElement('img');
+
+  option.addEventListener('mousedown', (e) => checkCoord(e));
   
   option.append(image);
   list.append(option);
 
   setStyles(list, image, e);
-  console.log(e.target.getBoundingClientRect())
-
   e.target.parentNode.append(list);
 }
 
 function setStyles(list, image, e) {
-  /* const setVerticalCoord = window.pageYOffset + e.clientY;
-  const setHorizontalCoord = window.pageXOffset + e.clientX; */
-
   const sizeObj = e.target.getBoundingClientRect();
-
-  const setVerticalCoord = (e.clientY - sizeObj.top) * 100 / (sizeObj.height);
-  const setHorizontalCoord = (e.clientX - sizeObj.left) * 100 / (sizeObj.width);
-  console.log(e.clientX)
-  console.log(sizeObj.left + sizeObj.width)
-  console.log(e.clientX - sizeObj.left)
-
-  console.log('вертикальная:' + setVerticalCoord);
-  console.log('горизонтальная:' + setHorizontalCoord);
-  console.log(e.clientY)
+  const setVerticalCoord = (e.clientY - sizeObj.top) * 100 / sizeObj.height;
+  const setHorizontalCoord = (e.clientX - sizeObj.left) * 100 / sizeObj.width;
 
   image.style.width = '30px';
   image.style.height = '30px';
@@ -113,4 +112,14 @@ function setStyles(list, image, e) {
   list.style.position = 'absolute';
   list.style.top = `${setVerticalCoord}%`;
   list.style.left = `${setHorizontalCoord}%`;
+}
+
+function checkCoord(e) {
+  console.log(e)
+  const WaldoCoord = {
+    x1: 51.71,
+    y1: 46.38,
+    x2: 53.86,
+    y2: 51.46,
+  }
 }
