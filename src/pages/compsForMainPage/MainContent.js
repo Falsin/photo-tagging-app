@@ -90,7 +90,10 @@ function createDivElem(e) {
   let option = document.createElement('li');
   let image = document.createElement('img');
 
-  option.addEventListener('mousedown', (e) => checkCoord(e));
+  const setVerticalCoord = (e.clientY - sizeObj.top) * 100 / sizeObj.height;
+  const setHorizontalCoord = (e.clientX - sizeObj.left) * 100 / sizeObj.width;
+
+  option.addEventListener('mousedown', (e) => checkCoord(e, setVerticalCoord, setHorizontalCoord));
   
   option.append(image);
   list.append(option);
@@ -114,8 +117,8 @@ function setStyles(list, image, e) {
   list.style.left = `${setHorizontalCoord}%`;
 }
 
-function checkCoord(e) {
-  console.log(e)
+function checkCoord(...args) {
+  
   const WaldoCoord = {
     x1: 51.71,
     y1: 46.38,
