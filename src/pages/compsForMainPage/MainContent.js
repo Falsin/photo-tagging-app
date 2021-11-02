@@ -37,6 +37,7 @@ const WrapperForGame = styled.div`
 let img; 
 
 export default function MainContent(props) {
+  const [coords, setCoords] = useState(null);
   const [image, setImage] = useState(null);
   const [isGameOver, setGameStatus] = useState(false);
   const [timeObj, setTimer] = useState(
@@ -74,14 +75,18 @@ export default function MainContent(props) {
       <WrapperForGame >
         <TimerComp gameStatus={{isGameOver, setGameStatus, timeObj, setTimer}} />
         <img src={img} onClick={(e) => {
-          deleteDivElem(e);
-          createDivElem(e, {isGameOver, setGameStatus});
+          const sizeObj = e.target.getBoundingClientRect();
+          const verticalCoord = (e.clientY - sizeObj.top) * 100 / sizeObj.height;
+          const horizontalCoord = (e.clientX - sizeObj.left) * 100 / sizeObj.width;
+          setCoords({
+            verticalCoord: verticalCoord,
+            horizontalCoord: horizontalCoord
+          })
         }}/>
-
-        {/* <PopUp>
-          Pop up!
-        </PopUp> */}
-        {(!isGameOver ? null : PopUp)}
+        {(!isGameOver ? null : <PopUp time={timeObj}>
+          {correctFormat(timeObj)}
+          </PopUp>)}
+        {(coords === null) ? null : <StyledComp coords={coords} obj={{isGameOver, setGameStatus}} />}
       </WrapperForGame>
     )
   }
@@ -92,11 +97,8 @@ const PopUp = styled.div`
   width: 100%;
   height: 100%;
   background: red;
+  z-index: 3;
 `;
-
-/* function PopUp() {
-  return <div>Pop up!</div>
-} */
 
 function TimerComp(props) {
   useEffect(() => {
@@ -123,62 +125,46 @@ function TimerComp(props) {
     }
   })
 
-  return <div>{correctFormat(props)}</div>
+  return <div>{correctFormat(props.gameStatus.timeObj)}</div>
 }
 
 function correctFormat(props) {
-  let minut   = (props.gameStatus.timeObj.minut < 10) ? '0' + props.gameStatus.timeObj.minut : props.gameStatus.timeObj.minut; 
-  let second  = (props.gameStatus.timeObj.second < 10) ? '0' + props.gameStatus.timeObj.second : props.gameStatus.timeObj.second;
+  let minut   = (props.minut < 10) ? '0' + props.minut : props.minut; 
+  let second  = (props.second < 10) ? '0' + props.second : props.second;
 
   return minut + ':' + second;
 }
 
-function deleteDivElem(e) {
-  const list = e.target.parentNode.querySelector('ul');
-  if (list) {
-    list.remove();
-  }
+const WaldoList = function ({className}) {
+  return (
+    <ul className={className}>
+      <li onClick={(e) => {
+        if (checkCoord(arguments[0].coords.verticalCoord, arguments[0].coords.horizontalCoord)) {
+          gameOverAlert(arguments[0].obj);
+        }
+      }}>
+        <img src={waldo} />
+      </li>
+    </ul>
+  )
 }
 
-function createDivElem(e, obj) {
-  let list = document.createElement('ul');
-  let option = document.createElement('li');
-  let image = document.createElement('img');
-  const sizeObj = e.target.getBoundingClientRect();
+const StyledComp = styled(WaldoList)`
+  list-style: none;
+  position: absolute;
+  top: ${props => props.coords.verticalCoord}%;
+  left: ${props => props.coords.horizontalCoord}%;
 
-  const setVerticalCoord = (e.clientY - sizeObj.top) * 100 / sizeObj.height;
-  const setHorizontalCoord = (e.clientX - sizeObj.left) * 100 / sizeObj.width;
+  li {
+    padding: 0.5vmin 2vmin;
+    background: white;
 
-  option.addEventListener('mousedown', () => {
-    if (checkCoord(setVerticalCoord, setHorizontalCoord)) {
-      gameOverAlert(e, obj);
+    img {
+      width: 30px;
+      height: 30px;
     }
-  });
-  
-  option.append(image);
-  list.append(option);
-
-  setStyles(list, option, image, e);
-  e.target.parentNode.append(list);
-}
-
-function setStyles(list, option, image, e) {
-  const sizeObj = e.target.getBoundingClientRect();
-  const setVerticalCoord = (e.clientY - sizeObj.top) * 100 / sizeObj.height;
-  const setHorizontalCoord = (e.clientX - sizeObj.left) * 100 / sizeObj.width;
-
-  image.style.width = '30px';
-  image.style.height = '30px';
-  image.src = `${waldo}`;
-
-  list.style.listStyle  = 'none';
-  list.style.position   = 'absolute';
-  list.style.top        = `${setVerticalCoord}%`;
-  list.style.left       = `${setHorizontalCoord}%`;
-
-  option.style.padding = '0.5vmin 2vmin';
-  option.style.background = 'white'
-}
+  }
+`;
 
 function checkCoord(...args) {
   const WaldoCoord = {
@@ -195,19 +181,6 @@ function checkCoord(...args) {
   return false;
 }
 
-function gameOverAlert(e, obj) {
-
-  let popUP = document.createElement('div');
-  e.target.parentNode.append(popUP);
-
-  Promise.resolve((obj.setGameStatus(true)))
-    /* .then(() => {
-      let popUP = document.createElement('div');
-      e.target.parentNode.append(popUP);
-
-      popUP.style.position = 'absolute';
-      popUP.style.width = '100%';
-      popUP.style.height = '100%';
-      popUP.style.background = 'red';
-    }) */
+function gameOverAlert(obj) {
+  obj.setGameStatus(true);
 }
