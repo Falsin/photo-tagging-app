@@ -1,25 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import firebaseApp from "../../Firebase";
-import waldo from '../../images/waldo.jpg'
+import waldo from '../../images/waldo.jpg';
+import StyledWrapperBeforeGame from "./compsForMainContent/WrapperBeforeGame";
+import StyledWrapperForGame from "./compsForMainContent/wrapperForGame/WrapperForGame";
 
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
-import { Link } from "react-router-dom";
 
 const storage = getStorage(firebaseApp);
-
-const WrapperBeforeGame = styled.div`
-  a {
-    display: block;
-    width: 200px;
-    height: 150px;
-
-    img {
-      width: 100%;
-      height: 100%;
-    }
-  }
-`
 
 const WrapperForGame = styled.div`
   flex-direction: column;
@@ -47,47 +35,38 @@ export default function MainContent(props) {
     })
 
   useEffect(() => {
-    getDownloadURL(ref(storage, 'images/level-1.jpg'))
+    console.log(img)
+    if (!img) {
+      getDownloadURL(ref(storage, 'images/level-1.jpg'))
       .then((url) => {
         const xhr = new XMLHttpRequest();
         xhr.responseType = 'blob';
-        xhr.onload = (event) => {
+        xhr.onload = () => {
           img = URL.createObjectURL(xhr.response);
           setImage(URL.createObjectURL(xhr.response));
         };
         xhr.open('GET', url);
         xhr.send();
       })
+    } else {
+      setImage(img);
+    }
   }, [])
 
-  if (!props.gameState) {
-    return (
-      <WrapperBeforeGame>
-        <h2>Level 1</h2>
+  const propsObj = {coords, setCoords, img, isGameOver, setGameStatus, timeObj, setTimer};
 
-        <Link to="/gamePage">
-          <img src={image}></img>
-        </Link>
-      </WrapperBeforeGame>
-    )
+/*   return (
+    <>
+    {(props.gameState) ? null : <StyledWrapperBeforeGame image={image} />}
+    {(props.gameState) ? <StyledWrapperForGame propsObj={propsObj} /> : null}
+    </>
+  ) */
+
+  if (!props.gameState) {
+    return <StyledWrapperBeforeGame image={image} />
   } else {
     return (
-      <WrapperForGame >
-        <TimerComp gameStatus={{isGameOver, setGameStatus, timeObj, setTimer}} />
-        <img src={img} onClick={(e) => {
-          const sizeObj = e.target.getBoundingClientRect();
-          const verticalCoord = (e.clientY - sizeObj.top) * 100 / sizeObj.height;
-          const horizontalCoord = (e.clientX - sizeObj.left) * 100 / sizeObj.width;
-          setCoords({
-            verticalCoord: verticalCoord,
-            horizontalCoord: horizontalCoord
-          })
-        }}/>
-        {(!isGameOver ? null : <PopUp time={timeObj}>
-          {correctFormat(timeObj)}
-          </PopUp>)}
-        {(coords === null) ? null : <StyledComp coords={coords} obj={{isGameOver, setGameStatus}} />}
-      </WrapperForGame>
+      <StyledWrapperForGame propsObj={propsObj} />
     )
   }
 }

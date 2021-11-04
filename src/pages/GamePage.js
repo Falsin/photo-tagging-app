@@ -9,8 +9,5 @@ export default function GamePage() {
       <MainContent gameState={true} />
       <footer>footer</footer>
     </>
-    /* <div>
-      Game Page!
-    </div> */
   )
 }
