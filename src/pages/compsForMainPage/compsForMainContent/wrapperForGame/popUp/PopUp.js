@@ -5,7 +5,7 @@ import correctFormat from "../../../../../commonFunc/correctFormat";
 function PopUp({className}) {
   return (
     <div className={className}>
-      You finished in {correctFormat(props.timeObj)}
+      You finished in {correctFormat(arguments[0].time)}
     </div>
   )
 }
@@ -16,6 +16,9 @@ const StyledPopUp = styled(PopUp)`
   height: 100%;
   background: red;
   z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `
 
 export default StyledPopUp;

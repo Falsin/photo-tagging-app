@@ -5,6 +5,7 @@ import TimerComp from "./timerComp/TimerComp";
 import waldo from "../../../../images/waldo.jpg";
 
 function WrapperForGame({className}) {
+
   return (
     <section className={className}>
       <TimerComp {...arguments[0].propsObj} />
@@ -18,8 +19,7 @@ function WrapperForGame({className}) {
         })
       }}/>
       {(arguments[0].propsObj.coords === null) ? null : <StyledComp {...arguments[0].propsObj} />}
-      {/* 
-      {!isGameOver ? null : <PopUp time={props.time}/>} */}
+      {!arguments[0].propsObj.isGameOver ? null : <PopUp time={arguments[0].propsObj.timeObj}/>}
     </section>
   )
 }
@@ -42,7 +42,7 @@ const WaldoList = function ({className}) {
     <ul className={className}>
       <li onClick={(e) => {
         if (checkCoord(arguments[0].coords.verticalCoord, arguments[0].coords.horizontalCoord)) {
-          gameOverAlert(arguments[0].obj);
+          gameOverAlert(arguments[0]);
         }
       }}>
         <img src={waldo} />
@@ -55,7 +55,6 @@ const StyledComp = styled(WaldoList)`
   list-style: none;
   position: absolute;
   top: ${props => {
-    console.log(props)
     return props.coords.verticalCoord + '%';
     }
   };
@@ -71,5 +70,24 @@ const StyledComp = styled(WaldoList)`
     }
   }
 `;
+
+function checkCoord(...args) {
+  const WaldoCoord = {
+    x1: 51.71,
+    y1: 46.38,
+    x2: 53.86,
+    y2: 51.46,
+  }
+
+  if (args[0] >= WaldoCoord.y1 && args[0] <= WaldoCoord.y2 &&
+      args[1] >= WaldoCoord.x1 && args[1] <= WaldoCoord.x2) {
+    return true;
+  }
+  return false;
+}
+
+function gameOverAlert(arg) {
+  arg.setGameStatus(true);
+}
 
 export default StyledWrapperForGame;
